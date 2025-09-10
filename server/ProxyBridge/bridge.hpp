@@ -61,17 +61,13 @@ private:
 	std::string ssl_dhparam;
 	std::string proxy_ssl_name;
 
-	std::string target;
-	std::string chromium;
-	unsigned int target_pid = 0;
-
 	bool transparent = false;
-	bool autoindex = false;
+	bool autoindex = true;
 	bool htpasswd = false;
 
 	bool disable_http = false;
-	bool disable_insecure = true;
-	bool disable_logs;
+	bool disable_insecure = false;
+	bool disable_logs = true;
 	bool disable_socks = false;
 	bool disable_udp = false;
 
@@ -126,10 +122,8 @@ public:
 	const int& UdpTimeout() const;
 	const int& TcpTimeout() const;
 	const int& Ratelimit() const;
-	const unsigned short& Port() const;
 private:
 	Status status_ = Status::Stoped;
-	unsigned short port_ = 0;
 	std::atomic_bool open_ = false;
 	std::vector<std::thread> threads_;
 	std::unique_ptr<boost::asio::io_context> ioc_;

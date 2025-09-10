@@ -412,15 +412,14 @@ BridgeService::~BridgeService() {
 void BridgeService::Init() {
 	[[maybe_unused]] boost::nowide::args a(__argc, __argv);
 	Util::platform_init();
-
+	ioc_ = std::make_unique<boost::asio::io_context>(1);
 	std::string config;
-
+	//--disable_insecure=false --autoindex=true  --disable_logs=true --scramble=false
 	boost::program_options::options_description desc("Options");
 	desc.add_options()
 		("help,h", "Help message.")
 		("config", po::value<std::string>(&config)->value_name("config.conf"), "Load configuration options from specified file.")
-		("target", po::value<std::string>(&target)->value_name(""), "Open target process path name.")
-		("chromium", po::value<std::string>(&chromium)->value_name("")->default_value(""), "Chromium command line - base64 encode.")
+
 		("server_listen", po::value<std::vector<std::string>>(&server_listens)->default_value({ "[::0]:1080" })->value_name("ip:port [ip:port ...]"), "Specify server listening address and port.")
 
 		("reuse_port", po::value<bool>(&reuse_port)->default_value(false, "false"), "Enable TCP SO_REUSEPORT option (available since Linux 3.9).")
@@ -438,7 +437,7 @@ void BridgeService::Init() {
 		("tcp_timeout", po::value<int>(&tcp_timeout)->default_value(-1), "Set TCP timeout for TCP connections.")
 		("rate_limit", po::value<int>(&rate_limit)->default_value(-1), "Set TCP rate limit for connection.")
 
-		("auth_users", po::value<std::vector<std::string>>(&auth_users)->multitoken()->default_value(std::vector<std::string>{""}), "List of authorized users(default user: jack:1111) (e.g: user1:passwd1 user2:passwd2).")
+		("auth_users", po::value<std::vector<std::string>>(&auth_users)->multitoken()->default_value(std::vector<std::string>{"jack:1111"}), "List of authorized users(default user: jack:1111) (e.g: user1:passwd1 user2:passwd2).")
 		("users_rate_limit", po::value<std::vector<std::string>>(&users_rate_limit)->multitoken(), "List of users rate limit (e.g: user1:1000000 user2:800000).")
 
 		("allow_region", po::value<std::vector<std::string>>(&allow_region)->multitoken(), "Allow region (e.g: 北京|河南|武汉|192.168.1.2|192.168.1.0/24|2001:0db8::1|2001:db8::/32).")
@@ -473,17 +472,6 @@ void BridgeService::Init() {
 		("noise_length", po::value<uint16_t>(&noise_length)->value_name("length")->default_value(0x0fff), "Length of the noise data.")
 		;
 
-	ioc_ = std::make_unique<boost::asio::io_context>(1);
-	//	server_listens.clear();
-	//	port_ = get_free_port(*ioc_);
-	//	std::string defaultAddress("127.0.0.1:");
-	//#if _DEBUG
-	//	defaultAddress.append("55668");
-	//#else
-	//	defaultAddress.append(std::to_string(port_));
-	//#endif
-	//	server_listens.emplace_back(defaultAddress);
-
 	variables_map_ = std::make_unique<boost::program_options::variables_map>();
 
 	boost::program_options::store(boost::program_options::command_line_parser(__argc, __argv)
@@ -515,8 +503,6 @@ void BridgeService::Stop() {
 		do {
 			if (status_ == Status::Started)
 				break;
-			if (target_pid > 0 && !IsProcessRunning(target_pid))
-				break;
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 		} while (1);
 		open_.store(false);
@@ -529,10 +515,6 @@ void BridgeService::Stop() {
 		threads_.clear();
 		status_ = Status::Stoped;
 	} while (0);
-}
-const unsigned short& BridgeService::Port() const {
-	std::lock_guard<std::mutex> lck{ *mtx_ };
-	return port_;
 }
 const std::vector<std::string>& BridgeService::ServerListens() const {
 	std::lock_guard<std::mutex> lck{ *mtx_ };
@@ -689,28 +671,6 @@ void BridgeService::Process() {
 		std::function<void()> on_started = [this]() {
 			status_ = Status::Started;
 			do {
-				//if (port_ <= 0)
-				//	break;
-				if (target.empty())
-					break;
-				if (!chromium.empty()) {
-					std::string tmp(chromium);
-					size_t desize = beast::detail::base64::decoded_size(tmp.size());
-					chromium.resize(tmp.size(), 0x00);
-					auto [len, _] = beast::detail::base64::decode((char*)chromium.data(), tmp.data(), tmp.size());
-					chromium.resize(len, 0x00);
-				}
-				DWORD curPid = GetCurrentProcessId();
-				std::string strPid(std::to_string(curPid));
-				strPid.insert(0, "--xsppid=");
-				/*
-								"--host-resolver-rules=MAP * ~NOTFOUND , EXCLUDE 127.0.0.1",
-				"--proxy-bypass-list=<-loopback>",
-				*/
-				std::vector<const char*> args = { strPid.c_str(),chromium.c_str(),nullptr };
-				target_pid = SpawnProcess(target.c_str(), &args[0], nullptr);
-				if (target_pid <= 0)
-					break;
 
 				status_ = Status::Running;
 			} while (0);
