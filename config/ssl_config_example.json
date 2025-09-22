@@ -1,0 +1,13 @@
+{
+  "proxy_server_config": {
+    "ssl_settings": {
+      "ssl_ciphers": "ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:!aNULL:!MD5:!DSS",
+      "ssl_prefer_server_ciphers": true,
+      "ssl_protocols": "TLSv1.2:TLSv1.3"
+    },
+    "anti_detection": {
+      "cipher_selection_strategy": "browser_mimic",
+      "tls_fingerprint_randomization": true
+    }
+  }
+}

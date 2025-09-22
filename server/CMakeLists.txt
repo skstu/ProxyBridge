@@ -1,1 +1,2 @@
 add_subdirectory(ProxyBridge)
+add_subdirectory(libbridge)

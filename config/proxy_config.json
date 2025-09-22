@@ -1,0 +1,159 @@
+{
+    "proxy_server_config": {
+        "description": "ProxyBridge配置文件 - 已通过AdScore检测的SOCKS5代理",
+        
+        "network": {
+            "listen_address": "127.0.0.1",
+            "listen_port": 1080,
+            "ipv6_only": false,
+            "reuse_port": false,
+            "bind_interface": ""
+        },
+        
+        "authentication": {
+            "enabled": false,
+            "users": [
+                {
+                    "username": "user1",
+                    "password": "pass1",
+                    "rate_limit_mbps": 10
+                }
+            ]
+        },
+        
+        "ssl_tls": {
+            "enabled": false,
+            "cert_path": "./certificates",
+            "ca_cert_path": "",
+            "ciphers": "HIGH:!aNULL:!MD5:!3DES",
+            "prefer_server_ciphers": true
+        },
+        
+        "upstream_proxy": {
+            "enabled": false,
+            "url": "socks5://upstream.proxy.com:1080",
+            "use_ssl": false,
+            "ssl_server_name": ""
+        },
+        
+        "anti_detection": {
+            "description": "反检测配置 - 已验证绕过AdScore",
+            "transparent_mode": false,
+            "disable_http": false,
+            "disable_socks": false,
+            "disable_insecure": false,
+            "disable_udp": false,
+            "so_mark": null
+        },
+        
+        "performance": {
+            "tcp_timeout": 60,
+            "udp_timeout": 60,
+            "tcp_rate_limit": -1,
+            "happyeyeballs": true,
+            "connect_v4_only": false,
+            "connect_v6_only": false
+        },
+        
+        "traffic_fingerprint": {
+            "description": "流量指纹回调配置",
+            "enabled": true,
+            "log_client_hello": true,
+            "log_tcp_window": true,
+            "log_ttl_values": true,
+            "log_ssl_handshake": true,
+            "log_packet_timing": false,
+            "output_format": "console"
+        },
+        
+        "access_control": {
+            "allow_regions": [],
+            "deny_regions": [],
+            "ipip_database": ""
+        },
+        
+        "web_server": {
+            "enabled": false,
+            "document_root": "",
+            "autoindex": false,
+            "htpasswd": false
+        },
+        
+        "advanced": {
+            "scramble": false,
+            "noise_length": 4096,
+            "local_ip": ""
+        }
+    },
+    
+    "browser_profiles": {
+        "description": "浏览器配置示例，用于最佳反检测效果",
+        
+        "chrome_recommended": {
+            "proxy_settings": {
+                "type": "socks5",
+                "host": "127.0.0.1",
+                "port": 1080
+            },
+            "chrome_flags": [
+                "--proxy-server=socks5://127.0.0.1:1080",
+                "--disable-features=VizDisplayCompositor",
+                "--disable-gpu-process-crash-limit",
+                "--disable-software-rasterizer",
+                "--disable-background-timer-throttling",
+                "--disable-renderer-backgrounding",
+                "--disable-backgrounding-occluded-windows"
+            ]
+        },
+        
+        "system_proxy": {
+            "description": "推荐使用系统代理而非应用内代理",
+            "windows": {
+                "registry_path": "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings",
+                "proxy_server": "socks=127.0.0.1:1080",
+                "proxy_enable": 1
+            },
+            "linux": {
+                "http_proxy": "socks5://127.0.0.1:1080",
+                "https_proxy": "socks5://127.0.0.1:1080"
+            }
+        }
+    },
+    
+    "testing": {
+        "description": "测试和验证配置",
+        
+        "detection_test_sites": [
+            "https://whoer.net/",
+            "https://browserleaks.com/",
+            "https://ipleak.net/",
+            "https://www.whatismyipaddress.com/"
+        ],
+        
+        "performance_test": {
+            "download_test": "https://speed.cloudflare.com/",
+            "latency_test": "ping 8.8.8.8",
+            "concurrent_connections": 100
+        }
+    },
+    
+    "troubleshooting": {
+        "common_issues": {
+            "still_detected": {
+                "solution": "尝试使用系统代理而非应用内代理",
+                "chrome_incognito": true,
+                "clear_browser_cache": true
+            },
+            "connection_failed": {
+                "check_firewall": true,
+                "check_antivirus": true,
+                "try_different_port": true
+            },
+            "slow_performance": {
+                "increase_buffer_size": false,
+                "disable_logging": true,
+                "check_upstream_proxy": true
+            }
+        }
+    }
+}

@@ -1,0 +1,247 @@
+{
+    "adscore_bypass_config": {
+        "description": "智能AdScore绕过配置文件",
+        
+        "detection_strategies": {
+            "description": "不同的反检测策略配置",
+            
+            "residential_proxy": {
+                "name": "住宅代理模式",
+                "success_rate": "95%+",
+                "description": "使用真实家庭宽带IP，最难被检测",
+                "proxy_url": "socks5://username:password@residential-proxy-provider.com:1080",
+                "backup_proxies": [
+                    "socks5://user:pass@residential-backup1.com:1080",
+                    "socks5://user:pass@residential-backup2.com:1080"
+                ],
+                "cost": "高成本",
+                "recommended": true
+            },
+            
+            "datacenter_proxy": {
+                "name": "数据中心代理模式", 
+                "success_rate": "70-80%",
+                "description": "使用数据中心IP，中等检测率",
+                "proxy_url": "socks5://username:password@datacenter-proxy.com:1080",
+                "backup_proxies": [
+                    "socks5://user:pass@dc-backup1.com:1080",
+                    "https://user:pass@dc-http-proxy.com:8080"
+                ],
+                "cost": "中等成本",
+                "recommended": false
+            },
+            
+            "vpn_integration": {
+                "name": "VPN集成模式",
+                "success_rate": "90%+",
+                "description": "与现有VPN服务集成",
+                "local_socks_port": 1081,
+                "openvpn_config": {
+                    "description": "OpenVPN配置示例",
+                    "config_file": "client.ovpn",
+                    "socks_proxy": "socks-proxy 127.0.0.1 1081"
+                },
+                "wireguard_config": {
+                    "description": "WireGuard配置示例", 
+                    "interface": "wg0",
+                    "endpoint": "vpn-server.com:51820"
+                },
+                "cost": "VPN订阅费用",
+                "recommended": true
+            },
+            
+            "proxy_chain": {
+                "name": "代理链模式",
+                "success_rate": "85%+", 
+                "description": "通过多层代理转发，增加匿名性",
+                "chain_config": [
+                    "socks5://user1:pass1@proxy1.com:1080",
+                    "https://user2:pass2@proxy2.com:8080",
+                    "socks5://user3:pass3@proxy3.com:1080"
+                ],
+                "cost": "多代理费用",
+                "recommended": false
+            }
+        },
+        
+        "smart_routing": {
+            "description": "智能路由规则配置",
+            
+            "adscore_domains": [
+                "adscore.com",
+                "adscore.io", 
+                "adscore.net",
+                "doubleclick.net",
+                "googleadservices.com",
+                "google-analytics.com",
+                "googletagmanager.com"
+            ],
+            
+            "tracking_patterns": [
+                "analytics",
+                "tracking", 
+                "fingerprint",
+                "fraud",
+                "adnxs",
+                "scorecardresearch",
+                "quantserve"
+            ],
+            
+            "bypass_rules": {
+                "always_proxy": [
+                    "*.adscore.*",
+                    "*.doubleclick.*",
+                    "analytics.google.com"
+                ],
+                "direct_connect": [
+                    "*.github.com",
+                    "*.stackoverflow.com", 
+                    "*.wikipedia.org"
+                ],
+                "auto_detect": true
+            }
+        },
+        
+        "real_world_examples": {
+            "description": "真实世界的配置示例",
+            
+            "example_1_openvpn": {
+                "description": "使用OpenVPN的配置",
+                "steps": [
+                    "1. 启动OpenVPN连接",
+                    "2. 配置代理服务器使用VPN出口",
+                    "3. 设置智能路由仅对检测域名使用VPN"
+                ],
+                "proxy_config": {
+                    "upstream_proxy": "",
+                    "bind_interface": "tun0",
+                    "dns_server": "8.8.8.8"
+                }
+            },
+            
+            "example_2_residential": {
+                "description": "使用住宅代理服务",
+                "providers": [
+                    {
+                        "name": "Bright Data",
+                        "url": "https://brightdata.com",
+                        "proxy_format": "socks5://user-session-rand123:pass@zproxy.lum-superproxy.io:22225"
+                    },
+                    {
+                        "name": "Smartproxy",
+                        "url": "https://smartproxy.com", 
+                        "proxy_format": "http://user:pass@gate.smartproxy.com:10000"
+                    }
+                ],
+                "config": {
+                    "session_rotation": "每10分钟",
+                    "sticky_session": true,
+                    "country": "US"
+                }
+            },
+            
+            "example_3_free_proxies": {
+                "description": "使用免费代理(不推荐用于生产)",
+                "warning": "免费代理通常不稳定且容易被检测",
+                "sources": [
+                    "https://www.proxy-list.download/api/v1/get?type=socks5",
+                    "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks5.txt"
+                ],
+                "rotation_interval": "5分钟"
+            }
+        },
+        
+        "testing_guide": {
+            "description": "测试AdScore绕过效果的方法",
+            
+            "test_sites": [
+                {
+                    "name": "AdScore官方测试",
+                    "url": "https://adscore.com/demo/",
+                    "expected": "应显示正常分数"
+                },
+                {
+                    "name": "浏览器指纹测试",
+                    "url": "https://browserleaks.com/",
+                    "expected": "IP地址应显示为代理IP"
+                },
+                {
+                    "name": "IP泄露测试", 
+                    "url": "https://ipleak.net/",
+                    "expected": "所有IP应为代理IP"
+                }
+            ],
+            
+            "success_indicators": [
+                "AdScore分数正常(通常>70)",
+                "IP地址显示为代理服务器IP",
+                "无真实IP泄露",
+                "TLS指纹正常"
+            ],
+            
+            "failure_indicators": [
+                "AdScore分数异常低(<50)",
+                "显示真实IP地址",
+                "检测到代理特征",
+                "连接被拒绝"
+            ]
+        },
+        
+        "troubleshooting": {
+            "description": "常见问题解决方案",
+            
+            "still_detected": {
+                "problem": "仍然被AdScore检测",
+                "solutions": [
+                    "切换到住宅代理",
+                    "更换代理服务器IP",
+                    "启用代理链模式",
+                    "检查DNS泄露",
+                    "使用不同的浏览器配置"
+                ]
+            },
+            
+            "slow_connection": {
+                "problem": "代理连接速度慢",
+                "solutions": [
+                    "选择地理位置更近的代理",
+                    "减少代理链长度", 
+                    "使用更快的代理服务",
+                    "优化缓冲区设置"
+                ]
+            },
+            
+            "connection_failed": {
+                "problem": "代理连接失败",
+                "solutions": [
+                    "检查代理服务器状态",
+                    "验证认证信息",
+                    "检查防火墙设置",
+                    "尝试备用代理"
+                ]
+            }
+        },
+        
+        "performance_optimization": {
+            "description": "性能优化建议",
+            
+            "connection_pooling": {
+                "enabled": true,
+                "max_connections": 100,
+                "keepalive_timeout": 60
+            },
+            
+            "caching": {
+                "dns_cache": true,
+                "dns_ttl": 300,
+                "proxy_health_check": true
+            },
+            
+            "load_balancing": {
+                "method": "round_robin",
+                "health_check_interval": 30,
+                "failure_threshold": 3
+            }
+        }
+    }
+}

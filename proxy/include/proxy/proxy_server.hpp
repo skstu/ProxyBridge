@@ -172,7 +172,7 @@ namespace proxy {
 	struct pem_file
 	{
 		fs::path filepath_;
-		pem_type type_ { pem_type::none };
+		pem_type type_{ pem_type::none };
 		int chains_{ 0 };
 	};
 
@@ -193,10 +193,10 @@ namespace proxy {
 	//////////////////////////////////////////////////////////////////////////
 
 	inline const char* version_string =
-R"x*x*x(nginx/1.20.2)x*x*x";
+		R"x*x*x(nginx/1.20.2)x*x*x";
 
 	inline const char* fake_400_content_fmt =
-R"x*x*x(HTTP/1.1 400 Bad Request
+		R"x*x*x(HTTP/1.1 400 Bad Request
 Server: nginx/1.20.2
 Date: {}
 Content-Type: text/html
@@ -212,7 +212,7 @@ Connection: close
 </html>)x*x*x";
 
 	inline const char* fake_400_content =
-R"x*x*x(<html>
+		R"x*x*x(<html>
 <head><title>400 Bad Request</title></head>
 <body bgcolor="white">
 <center><h1>400 Bad Request</h1></center>
@@ -221,7 +221,7 @@ R"x*x*x(<html>
 </html>)x*x*x";
 
 	inline const char* fake_401_content =
-R"x*x*x(<html>
+		R"x*x*x(<html>
 <head><title>401 Authorization Required</title></head>
 <body>
 <center><h1>401 Authorization Required</h1></center>
@@ -230,7 +230,7 @@ R"x*x*x(<html>
 </html>)x*x*x";
 
 	inline const char* fake_403_content =
-R"x*x*x(<html>
+		R"x*x*x(<html>
 <head><title>403 Forbidden</title></head>
 <body>
 <center><h1>403 Forbidden</h1></center>
@@ -240,7 +240,7 @@ R"x*x*x(<html>
 )x*x*x";
 
 	inline const char* fake_404_content_fmt =
-R"x*x*x(HTTP/1.1 404 Not Found
+		R"x*x*x(HTTP/1.1 404 Not Found
 Server: nginx/1.20.2
 Date: {}
 Content-Type: text/html
@@ -256,7 +256,7 @@ Connection: close
 </html>)x*x*x";
 
 	inline const char* fake_407_content_fmt =
-R"x*x*x(HTTP/1.1 407 Proxy Authentication Required
+		R"x*x*x(HTTP/1.1 407 Proxy Authentication Required
 Server: nginx/1.20.2
 Date: {}
 Connection: close
@@ -267,7 +267,7 @@ Content-Length: 0
 )x*x*x";
 
 	inline const char* fake_416_content =
-R"x*x*x(<html>
+		R"x*x*x(<html>
 <head><title>416 Requested Range Not Satisfiable</title></head>
 <body>
 <center><h1>416 Requested Range Not Satisfiable</h1></center>
@@ -277,7 +277,7 @@ R"x*x*x(<html>
 )x*x*x";
 
 	inline const char* fake_302_content =
-R"x*x*x(<html>
+		R"x*x*x(<html>
 <head><title>301 Moved Permanently</title></head>
 <body>
 <center><h1>301 Moved Permanently</h1></center>
@@ -308,14 +308,14 @@ R"x*x*x(<html>
 
 	// global_known_proto 用于指定全局已知的协议, 用于噪声注入时避免生成已知的协议头.
 	inline const std::set<uint8_t> global_known_proto =
-		{
-			0x04, // socks4
-			0x05, // socks5
-			0x47, // 'G'
-			0x50, // 'P'
-			0x43, // 'C'
-			0x16, // ssl
-		};
+	{
+		0x04, // socks4
+		0x05, // socks5
+		0x47, // 'G'
+		0x50, // 'P'
+		0x43, // 'C'
+		0x16, // ssl
+	};
 
 	inline const std::map<std::string, std::string> global_mimes =
 	{
@@ -668,7 +668,8 @@ R"x*x*x(<html>
 					if (str.front() == '-') {
 						auto pos = std::atoll(r.front().data());
 						results.emplace_back(-1, pos);
-					} else {
+					}
+					else {
 						auto pos = std::atoll(r.front().data());
 						results.emplace_back(pos, -1);
 					}
@@ -869,7 +870,7 @@ R"x*x*x(<html>
 	private:
 
 		inline net::awaitable<void>
-		transparent_proxy()
+			transparent_proxy()
 		{
 			auto executor = co_await net::this_coro::executor;
 
@@ -919,8 +920,8 @@ R"x*x*x(<html>
 		}
 
 		inline net::awaitable<bool>
-		noise_handshake(tcp::socket& socket,
-			std::vector<uint8_t>& inkey, std::vector<uint8_t>& outkey)
+			noise_handshake(tcp::socket& socket,
+				std::vector<uint8_t>& inkey, std::vector<uint8_t>& outkey)
 		{
 			boost::system::error_code error;
 
@@ -997,9 +998,9 @@ R"x*x*x(<html>
 
 			noise.resize(noise_length);
 			co_await net::async_read(
-					socket,
-					net::buffer(noise.data() + 16, remainder),
-					net_awaitable[error]);
+				socket,
+				net::buffer(noise.data() + 16, remainder),
+				net_awaitable[error]);
 
 			if (error)
 			{
@@ -1048,25 +1049,25 @@ R"x*x*x(<html>
 			}
 
 			auto scramble_setup = [this](auto& sock) mutable
-			{
-				if (!m_option.scramble_)
-					return;
-
-				if (m_inin_key.empty() || m_inout_key.empty())
-					return;
-
-				using Stream = std::decay_t<decltype(sock)>;
-				using ProxySocket = util::proxy_tcp_socket;
-
-				if constexpr (std::same_as<Stream, tcp::socket>)
-					return;
-
-				if constexpr (std::same_as<Stream, ProxySocket>)
 				{
-					sock.set_scramble_key(m_inout_key);
-					sock.set_unscramble_key(m_inin_key);
-				}
-			};
+					if (!m_option.scramble_)
+						return;
+
+					if (m_inin_key.empty() || m_inout_key.empty())
+						return;
+
+					using Stream = std::decay_t<decltype(sock)>;
+					using ProxySocket = util::proxy_tcp_socket;
+
+					if constexpr (std::same_as<Stream, tcp::socket>)
+						return;
+
+					if constexpr (std::same_as<Stream, ProxySocket>)
+					{
+						sock.set_scramble_key(m_inout_key);
+						sock.set_unscramble_key(m_inin_key);
+					}
+				};
 
 			// handshake_before 在调用 proto_detect 时第1次为 true, 第2次调用 proto_detect
 			// 时 handshake_before 为 false, 此时就表示已经完成了 scramble 握手并协
@@ -1106,25 +1107,25 @@ R"x*x*x(<html>
 
 			// scramble_peek 用于解密 peek 数据.
 			auto scramble_peek = [this](auto& sock, std::span<uint8_t> detect) mutable
-			{
-				if (!m_option.scramble_)
-					return;
-
-				if (m_inin_key.empty() || m_inout_key.empty())
-					return;
-
-				using Stream = std::decay_t<decltype(sock)>;
-				using ProxySocket = util::proxy_tcp_socket;
-
-				if constexpr (std::same_as<Stream, tcp::socket>)
-					return;
-
-				if constexpr (std::same_as<Stream, ProxySocket>)
 				{
-					auto& unscramble = sock.unscramble();
-					unscramble.peek_data(detect);
-				}
-			};
+					if (!m_option.scramble_)
+						return;
+
+					if (m_inin_key.empty() || m_inout_key.empty())
+						return;
+
+					using Stream = std::decay_t<decltype(sock)>;
+					using ProxySocket = util::proxy_tcp_socket;
+
+					if constexpr (std::same_as<Stream, tcp::socket>)
+						return;
+
+					if constexpr (std::same_as<Stream, ProxySocket>)
+					{
+						auto& unscramble = sock.unscramble();
+						unscramble.peek_data(detect);
+					}
+				};
 
 			if (!handshake_before)
 			{
@@ -1610,215 +1611,215 @@ R"x*x*x(<html>
 					domain, port, ec, atyp == SOCKS5_ATYP_DOMAINNAME);
 			}
 			else if (command == SOCKS5_CMD_UDP)
-			do {
-				if (m_option.disable_udp_)
-				{
-					log_conn_debug()
-						<< ", udp protocol disabled";
-					ec = net::error::connection_refused;
-					break;
-				}
+				do {
+					if (m_option.disable_udp_)
+					{
+						log_conn_debug()
+							<< ", udp protocol disabled";
+						ec = net::error::connection_refused;
+						break;
+					}
 
-				if (atyp == SOCKS5_ATYP_DOMAINNAME)
-				{
-					tcp::resolver resolver{ executor };
+					if (atyp == SOCKS5_ATYP_DOMAINNAME)
+					{
+						tcp::resolver resolver{ executor };
 
-					auto targets = co_await resolver.async_resolve(
-						domain,
-						std::to_string(port),
-						net_awaitable[ec]);
+						auto targets = co_await resolver.async_resolve(
+							domain,
+							std::to_string(port),
+							net_awaitable[ec]);
+						if (ec)
+							break;
+
+						for (const auto& target : targets)
+						{
+							dst_endpoint = target.endpoint();
+							break;
+						}
+					}
+
+					// 创建UDP端口.
+					auto protocol = dst_endpoint.address().is_v4()
+						? udp::v4() : udp::v6();
+					m_udp_socket.open(protocol, ec);
 					if (ec)
 						break;
 
-					for (const auto& target : targets)
-					{
-						dst_endpoint = target.endpoint();
+					m_udp_socket.bind(
+						udp::endpoint(protocol, dst_endpoint.port()), ec);
+					if (ec)
 						break;
+
+					auto remote_endp = m_local_socket.remote_endpoint();
+
+					// 所有发向 udp socket 的数据, 都将转发到 m_local_udp_address
+					// 除非地址是 m_local_udp_address 本身除外.
+					m_local_udp_address = remote_endp.address();
+
+					// 开启udp socket数据接收, 并计时, 如果在一定时间内没有接收到数据包
+					// 则关闭 udp socket 等相关资源.
+					net::co_spawn(executor,
+						tick(), net::detached);
+
+					net::co_spawn(executor,
+						forward_udp(), net::detached);
+
+					wbuf.consume(wbuf.size());
+					auto wp = (char*)wbuf.prepare(64 + domain.size()).data();
+
+					write<uint8_t>(SOCKS_VERSION_5, wp);	// VER
+					write<uint8_t>(0, wp);					// REP
+					write<uint8_t>(0x00, wp);				// RSV
+
+					auto local_endp = m_udp_socket.local_endpoint(ec);
+					if (ec)
+						break;
+
+					log_conn_debug()
+						<< ", local udp address: "
+						<< m_local_udp_address.to_string()
+						<< ", udp socket: "
+						<< local_endp;
+
+					if (local_endp.address().is_v4())
+					{
+						auto uaddr = local_endp.address().to_v4().to_uint();
+
+						write<uint8_t>(SOCKS5_ATYP_IPV4, wp);
+						write<uint32_t>(uaddr, wp);
+						write<uint16_t>(local_endp.port(), wp);
 					}
-				}
+					else if (local_endp.address().is_v6())
+					{
+						write<uint8_t>(SOCKS5_ATYP_IPV6, wp);
+						auto data = local_endp.address().to_v6().to_bytes();
+						for (auto c : data)
+							write<uint8_t>(c, wp);
+						write<uint16_t>(local_endp.port(), wp);
+					}
 
-				// 创建UDP端口.
-				auto protocol = dst_endpoint.address().is_v4()
-					? udp::v4() : udp::v6();
-				m_udp_socket.open(protocol, ec);
-				if (ec)
-					break;
+					auto len = wp - (const char*)wbuf.data().data();
+					wbuf.commit(len);
+					bytes = co_await net::async_write(m_local_socket,
+						wbuf,
+						net::transfer_exactly(len),
+						net_awaitable[ec]);
+					if (ec)
+					{
+						log_conn_warning()
+							<< ", write server response error: "
+							<< ec.message();
+						co_return;
+					}
 
-				m_udp_socket.bind(
-					udp::endpoint(protocol, dst_endpoint.port()), ec);
-				if (ec)
-					break;
-
-				auto remote_endp = m_local_socket.remote_endpoint();
-
-				// 所有发向 udp socket 的数据, 都将转发到 m_local_udp_address
-				// 除非地址是 m_local_udp_address 本身除外.
-				m_local_udp_address = remote_endp.address();
-
-				// 开启udp socket数据接收, 并计时, 如果在一定时间内没有接收到数据包
-				// 则关闭 udp socket 等相关资源.
-				net::co_spawn(executor,
-					tick(), net::detached);
-
-				net::co_spawn(executor,
-					forward_udp(), net::detached);
-
-				wbuf.consume(wbuf.size());
-				auto wp = (char*)wbuf.prepare(64 + domain.size()).data();
-
-				write<uint8_t>(SOCKS_VERSION_5, wp);	// VER
-				write<uint8_t>(0, wp);					// REP
-				write<uint8_t>(0x00, wp);				// RSV
-
-				auto local_endp = m_udp_socket.local_endpoint(ec);
-				if (ec)
-					break;
-
-				log_conn_debug()
-					<< ", local udp address: "
-					<< m_local_udp_address.to_string()
-					<< ", udp socket: "
-					<< local_endp;
-
-				if (local_endp.address().is_v4())
-				{
-					auto uaddr = local_endp.address().to_v4().to_uint();
-
-					write<uint8_t>(SOCKS5_ATYP_IPV4, wp);
-					write<uint32_t>(uaddr, wp);
-					write<uint16_t>(local_endp.port(), wp);
-				}
-				else if (local_endp.address().is_v6())
-				{
-					write<uint8_t>(SOCKS5_ATYP_IPV6, wp);
-					auto data = local_endp.address().to_v6().to_bytes();
-					for (auto c : data)
-						write<uint8_t>(c, wp);
-					write<uint16_t>(local_endp.port(), wp);
-				}
-
-				auto len = wp - (const char*)wbuf.data().data();
-				wbuf.commit(len);
-				bytes = co_await net::async_write(m_local_socket,
-					wbuf,
-					net::transfer_exactly(len),
-					net_awaitable[ec]);
-				if (ec)
-				{
-					log_conn_warning()
-						<< ", write server response error: "
-						<< ec.message();
 					co_return;
-				}
-
-				co_return;
-			} while (0);
+				} while (0);
 
 			// 连接成功或失败.
-			{
-				int8_t error_code = SOCKS5_SUCCEEDED;
-
-				if (ec == net::error::connection_refused)
-					error_code = SOCKS5_CONNECTION_REFUSED;
-				else if (ec == net::error::network_unreachable)
-					error_code = SOCKS5_NETWORK_UNREACHABLE;
-				else if (ec == net::error::host_unreachable)
-					error_code = SOCKS5_HOST_UNREACHABLE;
-				else if (ec)
-					error_code = SOCKS5_GENERAL_SOCKS_SERVER_FAILURE;
-
-				//  +----+-----+-------+------+----------+----------+
-				//  |VER | REP |  RSV  | ATYP | BND.ADDR | BND.PORT |
-				//  +----+-----+-------+------+----------+----------+
-				//  | 1  |  1  | X'00' |  1   | Variable |    2     |
-				//  +----+-----+-------+------+----------+----------+
-				//  [                                               ]
-
-				wbuf.consume(wbuf.size());
-				auto wp = (char*)wbuf.prepare(64 + domain.size()).data();
-
-				write<uint8_t>(SOCKS_VERSION_5, wp); // VER
-				write<uint8_t>(error_code, wp);		// REP
-				write<uint8_t>(0x00, wp);			// RSV
-
-				if (dst_endpoint.address().is_v4())
 				{
-					auto uaddr = dst_endpoint.address().to_v4().to_uint();
+					int8_t error_code = SOCKS5_SUCCEEDED;
 
-					write<uint8_t>(SOCKS5_ATYP_IPV4, wp);
-					write<uint32_t>(uaddr, wp);
-					write<uint16_t>(dst_endpoint.port(), wp);
+					if (ec == net::error::connection_refused)
+						error_code = SOCKS5_CONNECTION_REFUSED;
+					else if (ec == net::error::network_unreachable)
+						error_code = SOCKS5_NETWORK_UNREACHABLE;
+					else if (ec == net::error::host_unreachable)
+						error_code = SOCKS5_HOST_UNREACHABLE;
+					else if (ec)
+						error_code = SOCKS5_GENERAL_SOCKS_SERVER_FAILURE;
+
+					//  +----+-----+-------+------+----------+----------+
+					//  |VER | REP |  RSV  | ATYP | BND.ADDR | BND.PORT |
+					//  +----+-----+-------+------+----------+----------+
+					//  | 1  |  1  | X'00' |  1   | Variable |    2     |
+					//  +----+-----+-------+------+----------+----------+
+					//  [                                               ]
+
+					wbuf.consume(wbuf.size());
+					auto wp = (char*)wbuf.prepare(64 + domain.size()).data();
+
+					write<uint8_t>(SOCKS_VERSION_5, wp); // VER
+					write<uint8_t>(error_code, wp);		// REP
+					write<uint8_t>(0x00, wp);			// RSV
+
+					if (dst_endpoint.address().is_v4())
+					{
+						auto uaddr = dst_endpoint.address().to_v4().to_uint();
+
+						write<uint8_t>(SOCKS5_ATYP_IPV4, wp);
+						write<uint32_t>(uaddr, wp);
+						write<uint16_t>(dst_endpoint.port(), wp);
+					}
+					else if (dst_endpoint.address().is_v6())
+					{
+						write<uint8_t>(SOCKS5_ATYP_IPV6, wp);
+						auto data = dst_endpoint.address().to_v6().to_bytes();
+						for (auto c : data)
+							write<uint8_t>(c, wp);
+						write<uint16_t>(dst_endpoint.port(), wp);
+					}
+					else if (!domain.empty())
+					{
+						write<uint8_t>(SOCKS5_ATYP_DOMAINNAME, wp);
+						write<uint8_t>(static_cast<int8_t>(domain.size()), wp);
+						std::copy(domain.begin(), domain.end(), wp);
+						wp += domain.size();
+						write<uint16_t>(port, wp);
+					}
+					else
+					{
+						write<uint8_t>(0x1, wp);
+						write<uint32_t>(0, wp);
+						write<uint16_t>(0, wp);
+					}
+
+					auto len = wp - (const char*)wbuf.data().data();
+					wbuf.commit(len);
+					bytes = co_await net::async_write(m_local_socket,
+						wbuf,
+						net::transfer_exactly(len),
+						net_awaitable[ec]);
+					if (ec)
+					{
+						log_conn_warning()
+							<< ", write server response error: "
+							<< ec.message();
+						co_return;
+					}
+
+					if (error_code != SOCKS5_SUCCEEDED)
+						co_return;
 				}
-				else if (dst_endpoint.address().is_v6())
+
+				log_conn_debug()
+					<< ", connected start transfer";
+
+				// 发起数据传输协程.
+				if (command == SOCKS_CMD_CONNECT)
 				{
-					write<uint8_t>(SOCKS5_ATYP_IPV6, wp);
-					auto data = dst_endpoint.address().to_v6().to_bytes();
-					for (auto c : data)
-						write<uint8_t>(c, wp);
-					write<uint16_t>(dst_endpoint.port(), wp);
-				}
-				else if (!domain.empty())
-				{
-					write<uint8_t>(SOCKS5_ATYP_DOMAINNAME, wp);
-					write<uint8_t>(static_cast<int8_t>(domain.size()), wp);
-					std::copy(domain.begin(), domain.end(), wp);
-					wp += domain.size();
-					write<uint16_t>(port, wp);
+					size_t l2r_transferred = 0;
+					size_t r2l_transferred = 0;
+
+					co_await(
+						transfer(m_local_socket, m_remote_socket, l2r_transferred)
+						&&
+						transfer(m_remote_socket, m_local_socket, r2l_transferred)
+						);
+
+					log_conn_debug()
+						<< ", transfer completed"
+						<< ", local to remote: "
+						<< l2r_transferred
+						<< ", remote to local: "
+						<< r2l_transferred;
 				}
 				else
 				{
-					write<uint8_t>(0x1, wp);
-					write<uint32_t>(0, wp);
-					write<uint16_t>(0, wp);
-				}
-
-				auto len = wp - (const char*)wbuf.data().data();
-				wbuf.commit(len);
-				bytes = co_await net::async_write(m_local_socket,
-					wbuf,
-					net::transfer_exactly(len),
-					net_awaitable[ec]);
-				if (ec)
-				{
 					log_conn_warning()
-						<< ", write server response error: "
-						<< ec.message();
-					co_return;
+						<< ", SOCKS_CMD_BIND and SOCKS5_CMD_UDP is unsupported";
 				}
 
-				if (error_code != SOCKS5_SUCCEEDED)
-					co_return;
-			}
-
-			log_conn_debug()
-				<< ", connected start transfer";
-
-			// 发起数据传输协程.
-			if (command == SOCKS_CMD_CONNECT)
-			{
-				size_t l2r_transferred = 0;
-				size_t r2l_transferred = 0;
-
-				co_await(
-					transfer(m_local_socket, m_remote_socket, l2r_transferred)
-					&&
-					transfer(m_remote_socket, m_local_socket, r2l_transferred)
-					);
-
-				log_conn_debug()
-					<< ", transfer completed"
-					<< ", local to remote: "
-					<< l2r_transferred
-					<< ", remote to local: "
-					<< r2l_transferred;
-			}
-			else
-			{
-				log_conn_warning()
-					<< ", SOCKS_CMD_BIND and SOCKS5_CMD_UDP is unsupported";
-			}
-
-			co_return;
+				co_return;
 		}
 
 		inline net::awaitable<void> forward_udp()
@@ -1892,9 +1893,9 @@ R"x*x*x(<html>
 
 						auto targets =
 							co_await resolver.async_resolve(
-							domain,
-							std::to_string(port),
-							net_awaitable[ec]);
+								domain,
+								std::to_string(port),
+								net_awaitable[ec]);
 						if (ec)
 							break;
 
@@ -2118,10 +2119,10 @@ R"x*x*x(<html>
 
 			if (verify_passed)
 				log_conn_debug()
-					<< ", auth passed";
+				<< ", auth passed";
 			else
 				log_conn_warning()
-					<< ", auth no pass";
+				<< ", auth no pass";
 
 			if (!verify_passed)
 			{
@@ -2857,7 +2858,7 @@ R"x*x*x(<html>
 						&&
 						from.async_read_some(
 							net::buffer(secondary_buf, buf_size), net_awaitable[ec])
-					);
+						);
 
 				// 交换主从缓冲区.
 				std::swap(primary_buf, secondary_buf);
@@ -2899,10 +2900,10 @@ R"x*x*x(<html>
 		}
 
 		inline net::awaitable<bool>
-		connect_bridge_proxy(tcp::socket& remote_socket,
-			std::string target_host,
-			uint16_t target_port,
-			boost::system::error_code& ec)
+			connect_bridge_proxy(tcp::socket& remote_socket,
+				std::string target_host,
+				uint16_t target_port,
+				boost::system::error_code& ec)
 		{
 			auto executor = co_await net::this_coro::executor;
 
@@ -2930,8 +2931,8 @@ R"x*x*x(<html>
 				net::ip::tcp::endpoint endp(
 					net::ip::make_address(proxy_host),
 					m_bridge_proxy->port_number() ?
-						m_bridge_proxy->port_number() :
-							urls::default_port(m_bridge_proxy->scheme_id()));
+					m_bridge_proxy->port_number() :
+					urls::default_port(m_bridge_proxy->scheme_id()));
 
 				targets = tcp::resolver::results_type::create(
 					endp, proxy_host, m_bridge_proxy->scheme());
@@ -3073,130 +3074,130 @@ R"x*x*x(<html>
 				&proxy_host,
 				&remote_socket,
 				&ec]
-			() mutable -> net::awaitable<variant_stream_type>
-			{
-				ec = {};
-
-				log_conn_debug()
-					<< ", connect to next proxy: "
-					<< proxy_host
-					<< " instantiate stream";
-
-				if (m_option.proxy_pass_use_ssl_ || scheme == "https")
+				() mutable -> net::awaitable<variant_stream_type>
 				{
-					m_ssl_cli_context.set_verify_mode(net::ssl::verify_peer);
-					auto cert = default_root_certificates();
-					m_ssl_cli_context.add_certificate_authority(
-						net::buffer(cert.data(), cert.size()),
-						ec);
-					if (ec)
+					ec = {};
+
+					log_conn_debug()
+						<< ", connect to next proxy: "
+						<< proxy_host
+						<< " instantiate stream";
+
+					if (m_option.proxy_pass_use_ssl_ || scheme == "https")
 					{
-						XLOG_FWARN("connection id: {},"
-							" add_certificate_authority error: {}",
-							m_connection_id,
-							ec.message());
+						m_ssl_cli_context.set_verify_mode(net::ssl::verify_peer);
+						auto cert = default_root_certificates();
+						m_ssl_cli_context.add_certificate_authority(
+							net::buffer(cert.data(), cert.size()),
+							ec);
+						if (ec)
+						{
+							XLOG_FWARN("connection id: {},"
+								" add_certificate_authority error: {}",
+								m_connection_id,
+								ec.message());
+						}
+
+						m_ssl_cli_context.use_tmp_dh(
+							net::buffer(default_dh_param()), ec);
+
+						m_ssl_cli_context.set_verify_callback(
+							net::ssl::host_name_verification(proxy_host), ec);
+						if (ec)
+						{
+							XLOG_FWARN("connection id: {},"
+								" set_verify_callback error: {}",
+								m_connection_id,
+								ec.message());
+						}
+
+						// 生成 ssl socket 对象.
+						auto sock_stream = init_proxy_stream(
+							std::move(remote_socket), m_ssl_cli_context);
+
+						// get origin ssl stream type.
+						ssl_stream& ssl_socket =
+							boost::variant2::get<ssl_stream>(sock_stream);
+
+						if (m_option.scramble_)
+						{
+							auto& next_layer = ssl_socket.next_layer();
+
+							using NextLayerType =
+								std::decay_t<decltype(next_layer)>;
+
+							if constexpr (!std::same_as<tcp::socket, NextLayerType>)
+							{
+								next_layer.set_scramble_key(
+									m_outout_key
+								);
+
+								next_layer.set_unscramble_key(
+									m_outin_key
+								);
+							}
+						}
+
+						std::string sni = m_option.proxy_ssl_name_.empty()
+							? proxy_host : m_option.proxy_ssl_name_;
+
+						// Set SNI Hostname.
+						if (!SSL_set_tlsext_host_name(
+							ssl_socket.native_handle(), sni.c_str()))
+						{
+							XLOG_FWARN("connection id: {},"
+								" SSL_set_tlsext_host_name error: {}",
+								m_connection_id,
+								::ERR_get_error());
+						}
+
+						log_conn_debug()
+							<< ", do async ssl handshake...";
+
+						// do async handshake.
+						co_await ssl_socket.async_handshake(
+							net::ssl::stream_base::client,
+							net_awaitable[ec]);
+						if (ec)
+						{
+							XLOG_FWARN("connection id: {},"
+								" ssl client protocol handshake error: {}",
+								m_connection_id,
+								ec.message());
+						}
+
+						log_conn_debug()
+							<< ", " << proxy_host
+							<< " ssl handshake completed";
+
+						co_return sock_stream;
 					}
 
-					m_ssl_cli_context.use_tmp_dh(
-						net::buffer(default_dh_param()), ec);
-
-					m_ssl_cli_context.set_verify_callback(
-						net::ssl::host_name_verification(proxy_host), ec);
-					if (ec)
-					{
-						XLOG_FWARN("connection id: {},"
-							" set_verify_callback error: {}",
-							m_connection_id,
-							ec.message());
-					}
-
-					// 生成 ssl socket 对象.
 					auto sock_stream = init_proxy_stream(
-						std::move(remote_socket), m_ssl_cli_context);
+						std::move(remote_socket));
 
-					// get origin ssl stream type.
-					ssl_stream& ssl_socket =
-						boost::variant2::get<ssl_stream>(sock_stream);
+					auto& sock =
+						boost::variant2::get<proxy_tcp_socket>(sock_stream);
 
 					if (m_option.scramble_)
 					{
-						auto& next_layer = ssl_socket.next_layer();
-
 						using NextLayerType =
-							std::decay_t<decltype(next_layer)>;
+							std::decay_t<decltype(sock)>;
 
 						if constexpr (!std::same_as<tcp::socket, NextLayerType>)
 						{
-							next_layer.set_scramble_key(
+							sock.set_scramble_key(
 								m_outout_key
 							);
 
-							next_layer.set_unscramble_key(
+							sock.set_unscramble_key(
 								m_outin_key
 							);
 						}
 					}
 
-					std::string sni = m_option.proxy_ssl_name_.empty()
-						? proxy_host : m_option.proxy_ssl_name_;
-
-					// Set SNI Hostname.
-					if (!SSL_set_tlsext_host_name(
-						ssl_socket.native_handle(), sni.c_str()))
-					{
-						XLOG_FWARN("connection id: {},"
-						" SSL_set_tlsext_host_name error: {}",
-							m_connection_id,
-							::ERR_get_error());
-					}
-
-					log_conn_debug()
-						<< ", do async ssl handshake...";
-
-					// do async handshake.
-					co_await ssl_socket.async_handshake(
-						net::ssl::stream_base::client,
-						net_awaitable[ec]);
-					if (ec)
-					{
-						XLOG_FWARN("connection id: {},"
-							" ssl client protocol handshake error: {}",
-							m_connection_id,
-							ec.message());
-					}
-
-					log_conn_debug()
-						<< ", " << proxy_host
-						<< " ssl handshake completed";
-
 					co_return sock_stream;
-				}
-
-				auto sock_stream = init_proxy_stream(
-					std::move(remote_socket));
-
-				auto& sock =
-					boost::variant2::get<proxy_tcp_socket>(sock_stream);
-
-				if (m_option.scramble_)
-				{
-					using NextLayerType =
-						std::decay_t<decltype(sock)>;
-
-					if constexpr (!std::same_as<tcp::socket, NextLayerType>)
-					{
-						sock.set_scramble_key(
-							m_outout_key
-						);
-
-						sock.set_unscramble_key(
-							m_outin_key
-						);
-					}
-				}
-
-				co_return sock_stream;
-			};
+				};
 
 			m_remote_socket = std::move(co_await instantiate_stream());
 
@@ -3396,7 +3397,7 @@ R"x*x*x(<html>
 		}
 
 		inline net::awaitable<void>
-		normal_web_server(http::request<http::string_body>& req, std::optional<request_parser>& parser)
+			normal_web_server(http::request<http::string_body>& req, std::optional<request_parser>& parser)
 		{
 			boost::system::error_code ec;
 
@@ -3473,15 +3474,15 @@ R"x*x*x(<html>
 				boost::smatch what;
 				http_context http_ctx{ {}, req, target, make_real_target_path(req.target()) };
 
-				#define BEGIN_HTTP_ROUTE() if (false) {}
-				#define ON_HTTP_ROUTE(exp, func) \
+#define BEGIN_HTTP_ROUTE() if (false) {}
+#define ON_HTTP_ROUTE(exp, func) \
 				else if (boost::regex_match( \
 					target, what, boost::regex{ exp })) { \
 					for (auto i = 1; i < static_cast<int>(what.size()); i++) \
 						http_ctx.command_.emplace_back(what[i]); \
 					co_await func(http_ctx); \
 				}
-				#define END_HTTP_ROUTE() else { \
+#define END_HTTP_ROUTE() else { \
 					co_await default_http_route( \
 						req, \
 						fake_400_content, \
@@ -3492,9 +3493,9 @@ R"x*x*x(<html>
 					ON_HTTP_ROUTE(R"(^(.*)?(\/\?r=json.*)$)", on_http_all_json)
 					ON_HTTP_ROUTE(R"(^(.*)?(\/\?q=json.*)$)", on_http_json)
 					ON_HTTP_ROUTE(R"(^(?!.*\/$).*$)", on_http_get)
-				END_HTTP_ROUTE()
+					END_HTTP_ROUTE()
 
-				if (!keep_alive) break;
+					if (!keep_alive) break;
 				continue;
 			}
 
@@ -3561,7 +3562,8 @@ R"x*x*x(<html>
 				return boost::nowide::widen(result.path());
 			}
 			catch (const std::exception&)
-			{}
+			{
+			}
 
 			return boost::nowide::widen(target);
 		}
@@ -3583,26 +3585,26 @@ R"x*x*x(<html>
 		inline std::tuple<std::string, fs::path> file_last_wirte_time(const fs::path& file)
 		{
 			static auto loc_time = [](auto t) -> struct tm*
-			{
-				using time_type = std::decay_t<decltype(t)>;
-				if constexpr (std::is_same_v<time_type, std::filesystem::file_time_type>)
 				{
-					auto sctp = std::chrono::time_point_cast<
-						std::chrono::system_clock::duration>(t -
-							std::filesystem::file_time_type::clock::now() +
+					using time_type = std::decay_t<decltype(t)>;
+					if constexpr (std::is_same_v<time_type, std::filesystem::file_time_type>)
+					{
+						auto sctp = std::chrono::time_point_cast<
+							std::chrono::system_clock::duration>(t -
+								std::filesystem::file_time_type::clock::now() +
 								std::chrono::system_clock::now());
-					auto time = std::chrono::system_clock::to_time_t(sctp);
-					return std::localtime(&time);
-				}
-				else if constexpr (std::is_same_v<time_type, std::time_t>)
-				{
-					return std::localtime(&t);
-				}
-				else
-				{
-					static_assert(!std::is_same_v<time_type, time_type>, "time type required!");
-				}
-			};
+						auto time = std::chrono::system_clock::to_time_t(sctp);
+						return std::localtime(&time);
+					}
+					else if constexpr (std::is_same_v<time_type, std::time_t>)
+					{
+						return std::localtime(&t);
+					}
+					else
+					{
+						static_assert(!std::is_same_v<time_type, time_type>, "time type required!");
+					}
+				};
 
 			boost::system::error_code ec;
 			std::string time_string;
@@ -3611,13 +3613,13 @@ R"x*x*x(<html>
 			auto ftime = fs::last_write_time(file, ec);
 			if (ec)
 			{
-		#ifdef WIN32
+#ifdef WIN32
 				if (file.string().size() > MAX_PATH)
 				{
 					unc_path = make_unc_path(file);
 					ftime = fs::last_write_time(unc_path, ec);
 				}
-		#endif
+#endif
 			}
 
 			if (!ec)
@@ -3637,7 +3639,7 @@ R"x*x*x(<html>
 		}
 
 		inline std::vector<std::wstring>
-		format_path_list(const std::string& path, boost::system::error_code& ec)
+			format_path_list(const std::string& path, boost::system::error_code& ec)
 		{
 			fs::directory_iterator end;
 			fs::directory_iterator it(path, fs::directory_options::skip_permission_denied, ec);
@@ -3687,7 +3689,7 @@ R"x*x*x(<html>
 				}
 				else
 				{
-					auto leaf =  boost::nowide::narrow(item.filename().wstring());
+					auto leaf = boost::nowide::narrow(item.filename().wstring());
 					rpath = boost::nowide::widen(leaf);
 					int width = 50 - (int)rpath.size();
 					width = width < 0 ? 0 : width;
@@ -3760,7 +3762,7 @@ R"x*x*x(<html>
 			auto self = shared_from_this();
 
 			return net::async_initiate<CompletionToken,
-				void (boost::system::error_code, std::string)>(
+				void(boost::system::error_code, std::string)>(
 					[this, self, path]
 					(auto&& handler) mutable
 					{
@@ -4509,24 +4511,24 @@ R"x*x*x(<html>
 		inline void stream_expires_never(variant_stream_type& stream)
 		{
 			boost::variant2::visit([](auto& s) mutable
-			{
-				using ValueType = std::decay_t<decltype(s)>;
-				using NextLayerType = util::proxy_tcp_socket::next_layer_type;
-
-				if constexpr (std::same_as<NextLayerType, util::tcp_socket>)
 				{
-					if constexpr (std::same_as<util::proxy_tcp_socket, ValueType>)
+					using ValueType = std::decay_t<decltype(s)>;
+					using NextLayerType = util::proxy_tcp_socket::next_layer_type;
+
+					if constexpr (std::same_as<NextLayerType, util::tcp_socket>)
 					{
-						auto& next_layer = s.next_layer();
-						next_layer.expires_never();
+						if constexpr (std::same_as<util::proxy_tcp_socket, ValueType>)
+						{
+							auto& next_layer = s.next_layer();
+							next_layer.expires_never();
+						}
+						else if constexpr (std::same_as<util::ssl_stream, ValueType>)
+						{
+							auto& next_layer = s.next_layer().next_layer();
+							next_layer.expires_never();
+						}
 					}
-					else if constexpr (std::same_as<util::ssl_stream, ValueType>)
-					{
-						auto& next_layer = s.next_layer().next_layer();
-						next_layer.expires_never();
-					}
-				}
-			}, stream);
+				}, stream);
 		}
 
 		inline void stream_expires_after(variant_stream_type& stream, net::steady_timer::duration expiry_time)
@@ -4535,47 +4537,47 @@ R"x*x*x(<html>
 				return;
 
 			boost::variant2::visit([expiry_time](auto& s) mutable
-			{
-				using ValueType = std::decay_t<decltype(s)>;
-				using NextLayerType = util::proxy_tcp_socket::next_layer_type;
-
-				if constexpr (std::same_as<NextLayerType, util::tcp_socket>)
 				{
-					if constexpr (std::same_as<util::proxy_tcp_socket, ValueType>)
+					using ValueType = std::decay_t<decltype(s)>;
+					using NextLayerType = util::proxy_tcp_socket::next_layer_type;
+
+					if constexpr (std::same_as<NextLayerType, util::tcp_socket>)
 					{
-						auto& next_layer = s.next_layer();
-						next_layer.expires_after(expiry_time);
+						if constexpr (std::same_as<util::proxy_tcp_socket, ValueType>)
+						{
+							auto& next_layer = s.next_layer();
+							next_layer.expires_after(expiry_time);
+						}
+						else if constexpr (std::same_as<util::ssl_stream, ValueType>)
+						{
+							auto& next_layer = s.next_layer().next_layer();
+							next_layer.expires_after(expiry_time);
+						}
 					}
-					else if constexpr (std::same_as<util::ssl_stream, ValueType>)
-					{
-						auto& next_layer = s.next_layer().next_layer();
-						next_layer.expires_after(expiry_time);
-					}
-				}
-			}, stream);
+				}, stream);
 		}
 
 		inline void stream_expires_at(variant_stream_type& stream, net::steady_timer::time_point expiry_time)
 		{
 			boost::variant2::visit([expiry_time](auto& s) mutable
-			{
-				using ValueType = std::decay_t<decltype(s)>;
-				using NextLayerType = util::proxy_tcp_socket::next_layer_type;
-
-				if constexpr (std::same_as<NextLayerType, util::tcp_socket>)
 				{
-					if constexpr (std::same_as<util::proxy_tcp_socket, ValueType>)
+					using ValueType = std::decay_t<decltype(s)>;
+					using NextLayerType = util::proxy_tcp_socket::next_layer_type;
+
+					if constexpr (std::same_as<NextLayerType, util::tcp_socket>)
 					{
-						auto& next_layer = s.next_layer();
-						next_layer.expires_at(expiry_time);
+						if constexpr (std::same_as<util::proxy_tcp_socket, ValueType>)
+						{
+							auto& next_layer = s.next_layer();
+							next_layer.expires_at(expiry_time);
+						}
+						else if constexpr (std::same_as<util::ssl_stream, ValueType>)
+						{
+							auto& next_layer = s.next_layer().next_layer();
+							next_layer.expires_at(expiry_time);
+						}
 					}
-					else if constexpr (std::same_as<util::ssl_stream, ValueType>)
-					{
-						auto& next_layer = s.next_layer().next_layer();
-						next_layer.expires_at(expiry_time);
-					}
-				}
-			}, stream);
+				}, stream);
 		}
 
 		inline void stream_rate_limit(variant_stream_type& stream, int rate)
@@ -4700,7 +4702,7 @@ R"x*x*x(<html>
 
 	public:
 		inline static std::shared_ptr<proxy_server>
-		make(net::any_io_executor executor, proxy_server_option opt)
+			make(net::any_io_executor executor, proxy_server_option opt)
 		{
 			return std::shared_ptr<proxy_server>(new
 				proxy_server(executor, opt));
@@ -4814,21 +4816,21 @@ R"x*x*x(<html>
 					auto type = determine_pem_type(entry.path().string());
 					switch (type.type_)
 					{
-						case pem_type::cert:
-							if (type.chains_ > file.cert_.chains_)
-								file.cert_ = type;
-							break;
-						case pem_type::key:
-							file.key_ = type;
-							break;
-						case pem_type::dhparam:
-							file.dhparam_ = type;
-							break;
-						case pem_type::pwd:
-							file.pwd_ = type;
-							break;
-						default:
-							break;
+					case pem_type::cert:
+						if (type.chains_ > file.cert_.chains_)
+							file.cert_ = type;
+						break;
+					case pem_type::key:
+						file.key_ = type;
+						break;
+					case pem_type::dhparam:
+						file.dhparam_ = type;
+						break;
+					case pem_type::pwd:
+						file.pwd_ = type;
+						break;
+					default:
+						break;
 					}
 				}
 			}
@@ -5060,20 +5062,20 @@ R"x*x*x(<html>
 			update_certificate(m_option.ssl_cert_path_, *m_certificates);
 
 			// 设置 SNI 回调函数.
-    		SSL_CTX_set_tlsext_servername_callback(
+			SSL_CTX_set_tlsext_servername_callback(
 				m_ssl_srv_context.native_handle(), proxy_server::ssl_sni_callback);
-    		SSL_CTX_set_tlsext_servername_arg(m_ssl_srv_context.native_handle(), this);
+			SSL_CTX_set_tlsext_servername_arg(m_ssl_srv_context.native_handle(), this);
 		}
 
-		static int ssl_sni_callback(SSL *ssl, int *ad, void *arg)
+		static int ssl_sni_callback(SSL* ssl, int* ad, void* arg)
 		{
 			proxy_server* self = (proxy_server*)arg;
 			return self->sni_callback(ssl, ad);
 		}
 
-		inline int sni_callback(SSL *ssl, int *ad) noexcept
+		inline int sni_callback(SSL* ssl, int* ad) noexcept
 		{
-			const char *servername = SSL_get_servername(ssl, TLSEXT_NAMETYPE_host_name);
+			const char* servername = SSL_get_servername(ssl, TLSEXT_NAMETYPE_host_name);
 			if (servername)
 			{
 				certificate_file* default_ctx = nullptr;
@@ -5282,7 +5284,7 @@ R"x*x*x(<html>
 				{
 					if (!m_abort)
 						XLOG_ERR << "start_proxy_listen"
-							", async_accept: " << error.message();
+						", async_accept: " << error.message();
 					co_return;
 				}
 
@@ -5350,9 +5352,9 @@ R"x*x*x(<html>
 				auto new_session =
 					std::make_shared<proxy_session>(
 						m_executor,
-							init_proxy_stream(std::move(socket)),
-								connection_id,
-									self);
+						init_proxy_stream(std::move(socket)),
+						connection_id,
+						self);
 
 				// 保存 proxy_session 对象到 m_clients 中.
 				m_clients[connection_id] = new_session;
@@ -5366,7 +5368,7 @@ R"x*x*x(<html>
 		}
 
 		inline net::awaitable<bool>
-		start_transparent_proxy(proxy_tcp_socket& socket, size_t connection_id) noexcept
+			start_transparent_proxy(proxy_tcp_socket& socket, size_t connection_id) noexcept
 		{
 #ifndef SO_ORIGINAL_DST
 #  define SO_ORIGINAL_DST 80
@@ -5432,9 +5434,9 @@ R"x*x*x(<html>
 				auto new_session =
 					std::make_shared<proxy_session>(
 						m_executor,
-							init_proxy_stream(std::move(socket)),
-								connection_id,
-									self, true);
+						init_proxy_stream(std::move(socket)),
+						connection_id,
+						self, true);
 
 				// 保存 proxy_session 对象到 m_clients 中.
 				m_clients[connection_id] = new_session;
@@ -5533,7 +5535,8 @@ R"x*x*x(<html>
 				}
 			}
 			catch (const std::exception&)
-			{}
+			{
+			}
 
 			return false;
 		}

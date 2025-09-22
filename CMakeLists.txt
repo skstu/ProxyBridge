@@ -584,8 +584,9 @@ endif()
 
 # ##############################################################################
 # 添加 server 项目
-
+set(BRIDGE_PROJECT_INCLUDE_DIR {CMAKE_CURRENT_SOURCE_DIR}/include)
 add_subdirectory(server)
+add_subdirectory(tests)
 
 # ##############################################################################
 # 添加 example 项目

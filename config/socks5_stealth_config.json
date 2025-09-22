@@ -1,0 +1,57 @@
+{
+  "server": {
+    "listen": [
+      "0.0.0.0:1080",
+      "0.0.0.0:8080",
+      "0.0.0.0:443"
+    ],
+    "auth_users": [
+      {"username": "socks5_user", "password": "Socks5Stealth2024!"},
+      {"username": "admin", "password": "AdminSecure123"}
+    ],
+    "tcp_timeout": 300,
+    "udp_timeout": 60,
+    "ssl_cert_path": "./certs/",
+    "disable_insecure": false,
+    "scramble": true,
+    "noise_length": 8192
+  },
+  "stealth_tunnel": {
+    "enabled": true,
+    "stealth_protocol": "socks5",
+    "enable_traffic_analysis_evasion": true,
+    "enable_deep_packet_inspection_evasion": true,
+    "stealth_padding_range_min": 32,
+    "stealth_padding_range_max": 1024,
+    "enable_protocol_hopping": true,
+    "protocol_hop_interval_minutes": 15,
+    "enable_timing_jitter": true,
+    "jitter_range_ms": 50,
+    "enable_multilayer_obfuscation": true,
+    "enable_traffic_fingerprint_spoofing": true,
+    "target_fingerprint": "chrome",
+    "enable_traffic_shaping": true,
+    "user_behavior_pattern": "office_worker"
+  },
+  "socks5_advanced": {
+    "enable_fake_handshake": true,
+    "handshake_delay_ms": 10,
+    "enable_connection_pooling": true,
+    "pool_size": 8,
+    "enable_request_fragmentation": true,
+    "fragment_size_min": 16,
+    "fragment_size_max": 128,
+    "enable_response_padding": true,
+    "response_padding_ratio": 0.2
+  },
+  "security": {
+    "allow_regions": ["中国", "香港", "台湾", "美国"],
+    "deny_regions": [],
+    "ipip_db": "./ipip.datx"
+  },
+  "disguise": {
+    "doc_directory": "./www/",
+    "autoindex": true,
+    "version_string": "nginx/1.20.2"
+  }
+}

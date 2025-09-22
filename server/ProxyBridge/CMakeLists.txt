@@ -18,7 +18,7 @@ target_link_libraries(${PROJECT_NAME} ${PROXY_LIBRARIES})
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC -DVERSION_GIT=\"${PVERSION}\")
 
-set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "server/proxy_server")
+set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "server/ProxyBridge")
 
 if(WIN32)
   if(MSVC)

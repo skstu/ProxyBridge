@@ -1,0 +1,41 @@
+{
+  "server": {
+    "listen": [
+      "0.0.0.0:1080",
+      "0.0.0.0:8080",
+      "0.0.0.0:443"
+    ],
+    "auth_users": [
+      {"username": "stealth_user", "password": "StealthPassword2024!"},
+      {"username": "admin", "password": "AdminSecure123"}
+    ],
+    "tcp_timeout": 300,
+    "udp_timeout": 60,
+    "ssl_cert_path": "./certs/",
+    "disable_insecure": false,
+    "scramble": true,
+    "noise_length": 4096
+  },
+  "stealth_tunnel": {
+    "enabled": true,
+    "stealth_protocol": "https",
+    "enable_traffic_analysis_evasion": true,
+    "enable_deep_packet_inspection_evasion": true,
+    "stealth_padding_range_min": 64,
+    "stealth_padding_range_max": 1472,
+    "enable_protocol_hopping": true,
+    "protocol_hop_interval_minutes": 30,
+    "enable_timing_jitter": true,
+    "jitter_range_ms": 100
+  },
+  "security": {
+    "allow_regions": ["中国", "香港", "台湾"],
+    "deny_regions": [],
+    "ipip_db": "./ipip.datx"
+  },
+  "disguise": {
+    "doc_directory": "./www/",
+    "autoindex": true,
+    "version_string": "nginx/1.20.2"
+  }
+}
